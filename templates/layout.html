@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{% block blocktitle %} {% endblock %} - URL Shortener </title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0"/>
+  <style>
+    * {
+      --light-bgcolor: #f0f0f0;
+      --div-bgcolor: #dedede; 
+      --active-bgcolor: #dfdfdf;
+      --accent-color: #2c2c2c;
+      --border-color: #2c2c2c;
+      font-family: monospace;
+      font-size: 98%;
+    }
+    html, body {
+      margin: 0;
+      background-color: var(--light-bgcolor);
+    }
+    body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    div {
+      padding: 25px;
+      margin: 50px auto 20px;
+      width: calc(100% - 100px);
+      max-width: 700px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      background-color: var(--div-bgcolor);
+    }
+    div.root-div, div.error-div {
+      width: calc(100% - 80px);
+    }
+    h4 {
+      margin: 0 0;
+      padding: 5px;
+      border: 0.5px solid #DEBEBE;
+      border-radius: 10px;
+      width: calc(100% - 15px);
+      background-color: #DED1D1;
+    }
+    input, textarea {
+      margin: 5px auto;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1px 7px 1px;
+      background-color: var(--light-bgcolor);
+    }
+    input.text, textarea.text {
+      width: calc(100% - 20px);
+      height: 25px;
+      outline: none;
+    }
+    textarea.text {
+      padding: 7px;
+      height: 200px;
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+    input.text {
+      width: calc(100% - 20px - 50px);
+    }
+    input.button, button {
+      min-width: 80px;
+      height: 30px;
+      color: var(--accent-color);
+    }
+    input.button:active {
+      background-color: var(--active-bgcolor);
+    }
+    font.ptrn-mark {
+      margin: 0 2px;
+      padding: 0 2px;
+      background-color: #DBDEEC;
+      border: 0.5px solid #ABAAC5; 
+    }
+    pre {
+      padding: 5px 0;
+      overflow-x: auto;
+    }
+    div.subcontainer {
+      display: flex;
+      align-items: center;
+      justify-content: left;
+      width: auto;
+      height: auto;
+      margin: 5px 0;
+      padding: 0;
+      border: 0;
+    }
+    input.chkbox, label.chkbox {
+      margin: 0 0 0 0;
+    }
+    label.chkbox {
+      margin: 0 0 0 10px;
+    }
+  </style>
+</head>
+<body>
+
+{% if not form.info %}
+  <div class="root-div">
+    <h3 style="color: var(--accent-color);">
+        {% block blocktitle %} {% endblock %}
+    </h3>
+    {% block blockmain %}
+    {% endblock %}
+  </div>
+{% else %}
+  <div class="error-div">
+    <h3 style="color: var(--accent-color);">{% form.info.title %}</h3>
+    <pre>{{ form.info.msg | safe }}</pre>
+  </div>
+{% endif %}
+
+</body>
+</html>

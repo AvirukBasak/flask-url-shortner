@@ -1,0 +1,20 @@
+{% block blocktitle %} Authenticate {% endblock %}
+
+{% block blockmain %}
+
+<form method="POST" action="/register">
+  <label for="username">Username:</label>
+  <input class="text" id="username" name="username" type="email" placeholder="Enter username" value="{{ form.username }}" required/></br>
+  {% if form.username %}<h4 style="color: tomato;">{{ form.info.msg }}</h4></br>{% endif %}
+
+  <label for="password">Password:</label>
+  <input class="text" id="password" name="password" type="password" placeholder="Enter password" value="{{ form.password }}" required/></br>
+  {% if form.password %}<h4 style="color: tomato;">{{ form.info.msg }}</h4></br>{% endif %}
+
+  <input class="button" id="submit" type="submit" value="Submit"/>&nbsp;
+  <input class="button" id="reset" type="reset" value="Clear"/>
+</form>
+
+<div class="subcontainer">Not registered? <a href="/register">Sign up</a></div>
+
+{% endblock %}

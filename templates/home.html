@@ -1,0 +1,16 @@
+{% block blocktitle %} Shorten New Link {% endblock %}
+
+{% block blockmain %}
+
+<form method="POST" action="/register">
+  <label for="username">Link:</label>
+  <input class="text" id="username" name="username" type="url" placeholder="Enter link" value="{{ form.username }}" required/></br>
+  {% if form.username %}<h4 style="color: tomato;">{{ form.info.msg }}</h4></br>{% endif %}
+
+  <input class="button" id="submit" type="submit" value="Submit"/>&nbsp;
+  <input class="button" id="reset" type="reset" value="Clear"/>
+</form>
+
+<div class="subcontainer">Not registered? <a href="/register">Sign up</a></div>
+
+{% endblock %}
