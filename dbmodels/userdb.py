@@ -14,18 +14,18 @@ def getUserdb(db):
         id = db.Column(db.Integer, primary_key=True)
         username = db.Column(db.String(9), nullable=False, unique=True)
         passhash = db.Column(db.String(128), nullable=False)
-        def __init__(username, password):
+        def __init__(self, username, password):
             if len(username) < 5: raise Error('username too short')
             if len(username) > 9: raise Error('username too long')
             if len(password) < 8: raise Error('password too short')
             self.username = username
             self.passhash = generate_password_hash(password)
-        def __repr__():
-            return '%d:%s' % (
+        def __repr__(self):
+            return '%s:%s' % (
                 self.id,
                 self.username
             )
-        def authenticate(password):
+        def authenticate(self, password):
             return check_password_hash(self.passhash, password)
     USERDB = Userdb
     return USERDB

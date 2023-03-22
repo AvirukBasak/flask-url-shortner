@@ -6,7 +6,7 @@
 
 <form method="POST" action="/auth">
   <label for="username">Username:</label>
-  <input class="text" id="username" name="username" type="email" placeholder="Enter username" value="{{ form.username }}" required/></br>
+  <input class="text" id="username" name="username" type="text" placeholder="Enter username" value="{{ form.username }}" required/></br>
   {% if res.info.username %}<h4 style="color: tomato;">{{ res.info.msg }}</h4></br>{% endif %}
 
   <label for="password">Password:</label>
