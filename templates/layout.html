@@ -9,7 +9,7 @@
       --light-bgcolor: #f0f0f0;
       --div-bgcolor: #dedede; 
       --active-bgcolor: #dfdfdf;
-      --accent-color: #2c2c2c;
+      --accent-color: #202020;
       --border-color: #2c2c2c;
       font-family: monospace;
       font-size: 98%;
@@ -33,7 +33,18 @@
       border-radius: 10px;
       background-color: var(--div-bgcolor);
     }
-    div.root-div, div.error-div {
+    div.unimportant {
+      color: #555;
+      font-size: 0.9em;
+    }
+    a {
+      color: dodgerblue;
+    }
+    div.input-div, div.error-div {
+      width: calc(100% - 100px);
+      max-width: 500px;
+    }
+    div.content-div {
       width: calc(100% - 80px);
     }
     h4 {
@@ -63,11 +74,12 @@
       overflow-x: auto;
     }
     input.text {
-      width: calc(100% - 20px - 50px);
+      width: calc(100% - 100px);
     }
     input.button, button {
       min-width: 80px;
       height: 30px;
+      font-size: 0.95em;
       color: var(--accent-color);
     }
     input.button:active {
@@ -103,18 +115,25 @@
 </head>
 <body>
 
-{% if not form.info %}
-  <div class="root-div">
+{% if res.content %}
+  <div class="content-div">
     <h3 style="color: var(--accent-color);">
-        {% block blocktitle %} {% endblock %}
+        {{ self.blocktitle() }}
     </h3>
     {% block blockmain %}
     {% endblock %}
   </div>
-{% else %}
+{% elif res.info.title %}
   <div class="error-div">
-    <h3 style="color: var(--accent-color);">{% form.info.title %}</h3>
-    <pre>{{ form.info.msg | safe }}</pre>
+    <h3 style="color: var(--accent-color);">{{ res.info.title }}</h3>
+    <pre>{{ res.info.msg | safe }}</pre>
+  </div>
+{% else %}
+  <div class="input-div">
+    <h3 style="color: var(--accent-color);">
+        {{ self.blocktitle() }}
+    </h3>
+    {{ self.blockmain() }}
   </div>
 {% endif %}
 

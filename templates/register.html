@@ -1,24 +1,26 @@
+{% extends 'layout.html' %}
+
 {% block blocktitle %} Register {% endblock %}
 
 {% block blockmain %}
 
-<form method="POST" action="/auth">
+<form method="POST" action="/register">
   <label for="username">Username:</label>
-  <input class="text" id="username" name="username" type="email" placeholder="Enter new username" value="{{ form.username }}" required/></br>
-  {% if form.username %}<h4 style="color: tomato;">{{ form.info.msg }}</h4></br>{% endif %}
+  <input class="text" id="username" name="username" type="email" placeholder="Enter new username" value="{{ res.username }}" required/></br>
+  {% if res.info.username %}<h4 style="color: tomato;">{{ res.info.msg }}</h4></br>{% endif %}
 
   <label for="password">Password:</label>
-  <input class="text" id="password" name="password" type="password" placeholder="Enter password" value="{{ form.password }}" required/></br>
-  {% if form.password %}<h4 style="color: tomato;">{{ form.info.msg }}</h4></br>{% endif %}
+  <input class="text" id="password" name="password" type="password" placeholder="Enter password" value="{{ res.password }}" required/></br>
+  {% if res.info.password %}<h4 style="color: tomato;">{{ res.info.msg }}</h4></br>{% endif %}
 
-  <label for="confpassword">Confirm password:</label>
-  <input class="text" id="confpassword" name="confpassword" type="password" placeholder="Confirm password" value="{{ form.confpassword }}" required/></br>
-  {% if form.confpassword %}<h4 style="color: tomato;">{{ form.info.msg }}</h4></br>{% endif %}
+  <label for="confpassword">Confirm:&nbsp;</label>
+  <input class="text" id="confpassword" name="confpassword" type="password" placeholder="Confirm password" value="{{ res.confpassword }}" required/></br>
+  {% if res.info.confpassword %}<h4 style="color: tomato;">{{ res.info.msg }}</h4></br>{% endif %}
 
   <input class="button" id="submit" type="submit" value="Submit"/>&nbsp;
   <input class="button" id="reset" type="reset" value="Clear"/>
 </form>
 
-<div class="subcontainer">Already registered? <a href="/auth">Sign in</a></div>
+<div class="subcontainer">Already registered?&nbsp;<a href="/auth">Sign in</a></div>
 
 {% endblock %}

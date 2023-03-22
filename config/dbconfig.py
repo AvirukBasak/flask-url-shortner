@@ -7,8 +7,12 @@ if __name__ == '__main__':
     exit(1)
 
 def dbconfig(app):
-    cwd = os.path.abspath(os.path.dirname(__file__))
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://' + os.path.join(cwd, 'data.sqlite')
+    datapath = os.path.abspath(
+        os.path.join(
+            os.path.join(
+                os.path.join(
+                    os.path.dirname(__file__), '..'), 'data'), 'data.sqlite'))
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://' + datapath
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
     SECRET_KEY = os.getenv('SECRET_KEY')
     if not SECRET_KEY: raise Exception('requires SECRET_KEY environment variable set')
