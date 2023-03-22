@@ -28,26 +28,31 @@ def index():
     return redirect('/home', code=302)
 
 
-@app.route('/register')
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    pass
 
 
-@app.route('/auth')
+@app.route('/auth', methods=['GET', 'POST'])
+def auth():
+    pass
 
 
 @app.route('/home')
 @login_required
+def home():
+    pass
 
 
 @app.route('/history')
 @login_required
+def history():
+    pass
 
 
 @app.route('/r/<url>')
 def external_redirect(url):
-    original = Urldb.query()
-        .filter_by(shrt_url=url)
-        .first()
-        .get_original_url()
+    original = Urldb.query().filter_by(shrt_url=url).first().get_original_url()
     return redirect(original, code=307)
 
 
