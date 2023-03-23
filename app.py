@@ -146,13 +146,16 @@ def auth():
             title = 'invalid username or password',
             msg = 'invalid username or password'
         )
+        login_user(u)
     except Exception as e: return create_err_response(
         username, password, None, 'error.html', 'error',
         title = 'Authentication Error',
         msg = str(e),
         code = 500
     )
-    return redirect('/home', code=302)
+    next = request.args.get('next')
+    if next: redirect(next, code=302)
+    return redirect('/', code=302)
 
 
 @app.route('/home')
