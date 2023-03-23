@@ -5,7 +5,7 @@ def init_db():
     if os.path.isfile('data/data.sqlite3'):
         print('database already exists')
         return
-    else: os.mkdir('data')
+    else: os.makedirs('data', exist_ok=True)
 
     con = sqlite3.connect('data/data.sqlite3')
     cur = con.cursor()
