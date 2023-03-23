@@ -38,7 +38,7 @@ def create_response(info_username = None, info_password = None, info_confpasswor
     return res
 
 
-def create_err_response(username, password, confpassword, template, error_at, title, msg, code = 400):
+def err_auth_response(username, password, confpassword, template, error_at, title, msg, code = 400):
     if error_at not in ['username','password','confpassword','error']:
         raise Exception('\'%s\' is not a valid input name' % error_at)
     return render_template(
@@ -84,41 +84,41 @@ def register():
     password = request.form.get('password')
     confpassword = request.form.get('confpassword')
     username = username.strip()
-    if len(username) < 5 or len(username) > 9: return create_err_response(
+    if len(username) < 5 or len(username) > 9: return err_auth_response(
         username, password, confpassword, 'register.html', 'username',
         title = 'username must have 5 to 9 characters',
         msg = 'username must have 5 to 9 characters'
     )
-    if chars := is_username_invalid(username): return create_err_response(
+    if chars := is_username_invalid(username): return err_auth_response(
         username, password, confpassword, 'register.html', 'username',
         title = 'invalid username',
         msg = 'username cannot contain any of ' + chars
     )
-    if password != confpassword: return create_err_response(
+    if password != confpassword: return err_auth_response(
         username, password, confpassword, 'register.html', 'confpassword',
         title = 'passwords didn\'t match',
         msg = 'passwords didn\'t match'
     )
-    if len(password) < 8: return create_err_response(
+    if len(password) < 8: return err_auth_response(
         username, password, confpassword, 'register.html', 'password',
         title = 'password should exceed 8 characters',
         msg = 'password should exceed 8 characters'
     )
-    if missing := is_missing_char(password): return create_err_response(
+    if missing := is_missing_char(password): return err_auth_response(
         username, password, confpassword, 'register.html', 'password',
         title = 'password should contain ' + missing,
         msg = 'password should contain ' + missing
     )
     try:
         u = Userdb.query.filter_by(username=username).first()
-        if u: return create_err_response(
+        if u: return err_auth_response(
             username, password, confpassword, 'register.html', 'username',
             title = 'an account of this username already exists',
             msg = 'an account of this username already exists'
         )
         u = Userdb(username, password)
         if not u.id: raise Exception('registration failed')
-    except Exception as e: return create_err_response(
+    except Exception as e: return err_auth_response(
         username, password, confpassword, 'error.html', 'error',
         title = 'Registration Error',
         msg = str(e),
@@ -139,7 +139,7 @@ def auth():
     username = request.form.get('username')
     password = request.form.get('password')
     username = username.strip()
-    if len(username) < 5 or len(username) > 9 or is_username_invalid(username): return create_err_response(
+    if len(username) < 5 or len(username) > 9 or is_username_invalid(username): return err_auth_response(
         username, password, None, 'auth.html', 'username',
         title = 'invalid username',
         msg = 'invalid username'
@@ -147,13 +147,13 @@ def auth():
     try:
         u = Userdb.query.filter_by(username=username).first()
         flag = u.authenticate(password) if u else False
-        if not flag: return create_err_response(
+        if not flag: return err_auth_response(
             username, password, None, 'auth.html', 'password',
             title = 'invalid username or password',
             msg = 'invalid username or password'
         )
         login_user(u)
-    except Exception as e: return create_err_response(
+    except Exception as e: return err_auth_response(
         username, password, None, 'error.html', 'error',
         title = 'Authentication Error',
         msg = str(e),
@@ -164,15 +164,19 @@ def auth():
     return redirect('/', code=302)
 
 
-@app.route('/home')
+@app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
-    return render_template('home.html',
-        form = {
-            'link': ''
-        },
+    if request.method == 'GET': return render_template('home.html',
+        form = { 'link': '' },
         res = create_response()
     )
+    try:
+        url = Urldb.query.filter_by(original_url=link).first()
+        if url: pass # TODO
+        # url = Urldb(username, link, shortlink)
+        if not url.id: raise Exception('server error')
+    except Exception as e: pass #TODO
 
 
 @app.route('/history')
