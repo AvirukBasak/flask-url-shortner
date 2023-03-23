@@ -46,6 +46,7 @@
     }
     div.content-div {
       width: calc(100% - 80px);
+      overflow: auto;
     }
     h4 {
       margin: 0 0;
@@ -138,7 +139,8 @@
     <h3 style="color: var(--accent-color);">{{ res.info.title }}</h3>
     <pre>{{ res.info.msg | safe }}</pre>
   </div>
-{% else %}
+{% endif %}
+{% if not res.content and not res.info.error or form %}
   <div class="input-div">
     <h3 style="color: var(--accent-color);">
         {{ self.blocktitle() }}

@@ -92,6 +92,7 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    if current_user.is_active: return redirect('/home', code=302)
     if request.method == 'GET': return render_template('register.html',
         form = {
             'username': '',
@@ -144,6 +145,7 @@ def register():
 
 @app.route('/auth', methods=['GET', 'POST'])
 def auth():
+    if current_user.is_active: return redirect('/home', code=302)
     if request.method == 'GET': return render_template('auth.html',
         form = {
             'username': '',
@@ -191,9 +193,8 @@ def home():
         res = create_response(
             info_link = True,
             info_msg = 'invalid url'
-        ),
-        code = 400
-    )
+        )
+    ), 400
     shortkey = shorten_url(link)
     username = current_user.username
     try:
@@ -216,13 +217,12 @@ def home():
                 info_error = True,
                 info_title = 'Server Error',
                 info_msg = str(e)
-            ),
-            code = 500
-        )
+            )
+        ), 500
     return render_template('home.html',
         form = { 'link': link },
         res = create_response(
-            info_shortkey = '<a href="/r/%s">https://localhost:5000/r/%s</a>' % (
+            info_shortkey = '<a href="/r/%s" target="_blank">https://localhost:5000/r/%s</a>' % (
                 shortkey,
                 shortkey
             )
@@ -233,14 +233,38 @@ def home():
 @app.route('/history')
 @login_required
 def history():
-    pass
+    def ret_split(el): 
+        (url, key) = str(el).rsplit('::', 1)
+        return (url, key)
+    content = Urldb.query.filter_by(username=current_user.username)
+    content = list(map(ret_split, content))
+    print(content)
+    return render_template('history.html',
+        form = {},
+        res = create_response(content=content)
+    )
 
 
 @app.route('/r/<key>')
 def external_redirect(key):
-    original = Urldb.query.filter_by(short_key=key).first().get_original_url()
+    original = Urldb.query.filter_by(short_key=key).first()
+    if not original: return render_template('error.html',
+        form = {},
+        res = create_response(
+            info_error = True,
+            info_title = 'Not Found',
+            info_msg = 'The given URL was not found'
+        )
+    ), 404
+    original = original.get_original_url()
     return redirect(original, code=307)
 
+
+@app.route('/logout', methods=['GET'])
+@login_required
+def logout():
+    logout_user()
+    return redirect('/', code=302)
 
 if __name__ == '__main__':
     app.run(debug=True)

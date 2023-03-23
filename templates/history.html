@@ -1,3 +1,49 @@
 {% extends 'layout.html' %}
 
 {% block blocktitle %} History {% endblock %}
+
+{% block blockmain %}
+
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 5px;
+  }
+  table, th, td {
+    border: 0.2px solid #c0c0c0;
+    margin: 0;
+    padding: 10px;
+  }
+  th {
+    text-align: left;
+  }
+  tr:nth-child(even) {
+    background-color: #d7d7d7;
+  }
+  td.left {
+    max-width: 100px;
+    overflow: hidden;
+  }
+  td.right {
+    width: calc(100% - 100px);
+    overflow: auto;
+  }
+</style>
+
+<table>
+  <tr>
+    <th>URL</th>
+    <th>Short URL</th>
+  </tr>
+  {% for (orig, key) in res.content %}
+  <tr>
+    <td class="left"><a href="{{ orig }}" target="_blank">{{ orig[:20] }}...</a></td>
+    <td class="right"><span>
+      <a href="/r/{{ key }}" target="_blank">https://localhost:5000/r/{{ key }}</a>
+    </span></td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
