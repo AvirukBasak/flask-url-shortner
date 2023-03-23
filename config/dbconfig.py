@@ -10,6 +10,11 @@ import os
 if __name__ == '__main__':
     exit(1)
 
+if not os.path.isfile('data/data.sqlite3'):
+    print('database doesn\'t exist')
+    print('run setup.py')
+    exit(1)
+
 def dbconfig(app):
     datapath = os.path.abspath(
         os.path.join(
@@ -17,7 +22,6 @@ def dbconfig(app):
                 os.path.join(
                     os.path.dirname(__file__), '..'), 'data'), 'data.sqlite3'))
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + datapath
-    print(app.config['SQLALCHEMY_DATABASE_URI'])
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
     SECRET_KEY = os.getenv('SECRET_KEY')
     if not SECRET_KEY: raise Exception('requires SECRET_KEY environment variable set')
