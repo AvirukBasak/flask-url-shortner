@@ -11,18 +11,17 @@ def getUrldb(db):
         __tablename__ = 'urldb'
         id = db.Column(db.Integer, primary_key=True)
         username = db.Column(db.Text, nullable=False)
-        orgn_url = db.Column(db.Text, nullable=False, unique=True)
-        shrt_url = db.Column(db.Text, nullable=False, unique=True)
+        original_url = db.Column(db.Text, nullable=False, unique=True)
+        short_key = db.Column(db.Text, nullable=False, unique=True)
         def __init__(self, username, original, shortened):
             self.username = username
-            self.orgn_url = original
-            self.shrt_url = shortened
+            self.original_url = original
+            self.short_key = shortened
         def __repr__(self):
             return '%s::%s' % (
-                self.orgn_url,
-                self.shrt_url
+                self.original_url,
+                self.short_key
             )
         def get_original_url(self):
-            return self.orgn_url
-    URLDB = Urldb
-    return URLDB
+            return self.original_url
+    return (URLDB := Urldb)

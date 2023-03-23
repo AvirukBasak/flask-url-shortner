@@ -1,3 +1,6 @@
+if __name__ == '__main__':
+    exit(1)
+
 from werkzeug.security import generate_password_hash, check_password_hash
 
 if __name__ == '__main__':
@@ -11,7 +14,7 @@ def getUserdb(db):
         return USERDB
     class Userdb(db.Model):
         __tablename__ = 'userdb'
-        id = db.Column(db.Integer, primary_key=True)
+        id = db.Column(db.Integer, nullable=False, primary_key=True)
         username = db.Column(db.String(9), nullable=False, unique=True)
         passhash = db.Column(db.String(128), nullable=False)
         def __init__(self, username, password):
@@ -27,5 +30,4 @@ def getUserdb(db):
             )
         def authenticate(self, password):
             return check_password_hash(self.passhash, password)
-    USERDB = Userdb
-    return USERDB
+    return (USERDB := Userdb)

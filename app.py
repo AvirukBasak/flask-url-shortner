@@ -17,6 +17,14 @@ login_manager.init_app(app)
 login_manager.login_view = 'auth'
 
 
+def is_missing_char(password):
+    return None
+
+
+def is_username_invalid(username):
+    return None
+
+
 def create_response(info_username = None, info_password = None, info_confpassword = None, info_title = None, info_msg = None, content = None, info_error = False):
     res = {}
     res['info'] = {}
@@ -30,12 +38,25 @@ def create_response(info_username = None, info_password = None, info_confpasswor
     return res
 
 
-def is_missing_char(password):
-    return None
-
-
-def is_invalid(username):
-    return None
+def create_err_response(username, password, confpassword, template, error_at, title, msg, code = 400):
+    if error_at not in ['username','password','confpassword','error']:
+        raise Exception('\'%s\' is not a valid input name' % error_at)
+    return render_template(
+        template,
+        form = {
+            'username': username,
+            'password': password,
+            'confpassword': confpassword
+        },
+        res = create_response(
+            info_username = error_at == 'username',
+            info_password = error_at == 'password',
+            info_confpassword = error_at == 'confpassword',
+            info_error = error_at == 'error',
+            info_title = title,
+            info_msg = msg
+        )
+    ), code
 
 
 @login_manager.user_loader
@@ -63,79 +84,39 @@ def register():
     password = request.form.get('password')
     confpassword = request.form.get('confpassword')
     username = username.strip()
-    if len(username) < 5 or len(username) > 9: return render_template('register.html',
-        form = {
-            'username': username,
-            'password': password,
-            'confpassword': confpassword
-        },
-        res = create_response(
-            info_username = True,
-            info_title = 'username must have 5 to 9 characters',
-            info_msg = 'username must have 5 to 9 characters'
-        )
+    if len(username) < 5 or len(username) > 9: return create_err_response(
+        username, password, confpassword, 'register.html', 'username',
+        title = 'username must have 5 to 9 characters',
+        msg = 'username must have 5 to 9 characters'
     )
-    if chars := is_invalid(username): return render_template('register.html',
-        form = {
-            'username': username,
-            'password': password,
-            'confpassword': confpassword
-        },
-        res = create_response(
-            info_username = True,
-            info_title = 'invalid username',
-            info_msg = 'username cannot contain any of ' + chars
-        )
+    if chars := is_username_invalid(username): return create_err_response(
+        username, password, confpassword, 'register.html', 'username',
+        title = 'invalid username',
+        msg = 'username cannot contain any of ' + chars
     )
-    if password != confpassword: return render_template('register.html',
-        form = {
-            'username': username,
-            'password': password,
-            'confpassword': confpassword
-        },
-        res = create_response(
-            info_confpassword = True,
-            info_title = 'passwords didn\'t match',
-            info_msg = 'passwords didn\'t match'
-        )
+    if password != confpassword: return create_err_response(
+        username, password, confpassword, 'register.html', 'confpassword',
+        title = 'passwords didn\'t match',
+        msg = 'passwords didn\'t match'
     )
-    if len(password) < 8: return render_template('register.html',
-        form = {
-            'username': username,
-            'password': password,
-            'confpassword': confpassword
-        },
-        res = create_response(
-            info_password = True,
-            info_title = 'password should exceed 8 characters',
-            info_msg = 'password should exceed 8 characters'
-        )
+    if len(password) < 8: return create_err_response(
+        username, password, confpassword, 'register.html', 'password',
+        title = 'password should exceed 8 characters',
+        msg = 'password should exceed 8 characters'
     )
-    if missing := is_missing_char(password): return render_template('register.html',
-        form = {
-            'username': username,
-            'password': password,
-            'confpassword': confpassword
-        },
-        res = create_response(
-            info_password = True,
-            info_title = 'password should contain ' + missing,
-            info_msg = 'password should contain ' + missing
-        )
+    if missing := is_missing_char(password): return create_err_response(
+        username, password, confpassword, 'register.html', 'password',
+        title = 'password should contain ' + missing,
+        msg = 'password should contain ' + missing
     )
     try:
         u = Userdb(username, password)
-    except Exception as e: return render_template('error.html',
-        form = {
-            'username': username,
-            'password': password,
-            'confpassword': confpassword
-        },
-        res = create_response(
-            info_error = True,
-            info_title = 'Registration Error',
-            info_msg = 'Details:\n' + str(e)
-        )
+        if not u.id: raise Exception('registration failed')
+    except Exception as e: return create_err_response(
+        username, password, confpassword, 'error.html', 'error',
+        title = 'Registration Error',
+        msg = str(e),
+        code = 500
     )
     return redirect('/auth', code=302)
 
@@ -152,41 +133,24 @@ def auth():
     username = request.form.get('username')
     password = request.form.get('password')
     username = username.strip()
-    if len(username) < 5 or len(username) > 9 or is_invalid(username): render_template('auth.html',
-        form = {
-            'username': username,
-            'password': password
-        },
-        res = create_response(
-            info_username = True,
-            info_title = 'invalid username',
-            info_msg = 'invalid username'
-        )
+    if len(username) < 5 or len(username) > 9 or is_username_invalid(username): return create_err_response(
+        username, password, None, 'auth.html', 'username',
+        title = 'invalid username',
+        msg = 'invalid username'
     )
     try:
         u = Userdb.query.filter_by(username=username).first()
         flag = u.authenticate(password) if u else False
-        if not flag: return render_template('auth.html',
-            form = {
-                'username': username,
-                'password': password
-            },
-            res = create_response(
-                info_confpassword = True,
-                info_title = 'invalid username or password',
-                info_msg = 'invalid username or password'
-            )
+        if not flag: return create_err_response(
+            username, password, None, 'auth.html', 'password',
+            title = 'invalid username or password',
+            msg = 'invalid username or password'
         )
-    except Exception as e: return render_template('error.html',
-        form = {
-            'username': username,
-            'password': password
-        },
-        res = create_response(
-            info_error = True,
-            info_title = 'Authentication Error',
-            info_msg = 'Details:\n' + str(e)
-        )
+    except Exception as e: return create_err_response(
+        username, password, None, 'error.html', 'error',
+        title = 'Authentication Error',
+        msg = str(e),
+        code = 500
     )
     return redirect('/home', code=302)
 
@@ -211,9 +175,9 @@ def history():
     )
 
 
-@app.route('/r/<url>')
-def external_redirect(url):
-    original = Urldb.query.filter_by(shrt_url=url).first().get_original_url()
+@app.route('/r/<key>')
+def external_redirect(key):
+    original = Urldb.query.filter_by(short_key=key).first().get_original_url()
     return redirect(original, code=307)
 
 

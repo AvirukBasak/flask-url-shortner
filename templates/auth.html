@@ -6,11 +6,25 @@
 
 <form method="POST" action="/auth">
   <label for="username">Username:</label>
-  <input class="text" id="username" name="username" type="text" placeholder="Enter username" value="{{ form.username }}" required/></br>
+  <input required
+    class = "text"
+    id = "username"
+    name = "username"
+    type = "text"
+    placeholder = "Enter username"
+    value = "{{ form.username }}"
+  /></br>
   {% if res.info.username %}<h4 style="color: tomato;">{{ res.info.msg }}</h4></br>{% endif %}
 
   <label for="password">Password:</label>
-  <input class="text" id="password" name="password" type="password" placeholder="Enter password" value="{{ form.password }}" required/></br>
+  <input required
+    class = "text"
+    id = "password"
+    name = "password"
+    type = "password"
+    placeholder = "Enter password"
+    value = "{{ form.password }}"
+  /></br>
   {% if res.info.password %}<h4 style="color: tomato;">{{ res.info.msg }}</h4></br>{% endif %}
 
   <input class="button" id="submit" type="submit" value="Submit"/>&nbsp;

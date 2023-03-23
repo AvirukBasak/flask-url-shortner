@@ -1,3 +1,6 @@
+if __name__ == '__main__':
+    exit(1)
+
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
