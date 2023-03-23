@@ -1,6 +1,8 @@
 if __name__ == '__main__':
     exit(1)
 
+from sqlalchemy import exc
+
 URLDB = None
 
 def getUrldb(db):
@@ -18,7 +20,12 @@ def getUrldb(db):
             self.original_url = original
             self.short_key = shortened
             db.session.add(self)
-            db.session.commit()
+            try:
+                db.session.commit()
+            except (exc.IntegrityError, Exception) as e:
+                if isinstance(e, exc.IntegrityError):
+                    db.session.rollback()
+                else: raise Exception(str(e))
         def __repr__(self):
             return '%s::%s' % (
                 self.original_url,

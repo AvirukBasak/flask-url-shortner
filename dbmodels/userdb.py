@@ -2,6 +2,7 @@ if __name__ == '__main__':
     exit(1)
 
 from flask_login import UserMixin
+from sqlalchemy import exc
 from werkzeug.security import generate_password_hash, check_password_hash
 
 if __name__ == '__main__':
@@ -24,11 +25,13 @@ def getUserdb(db):
             if len(password) < 8: raise Error('password too short')
             self.username = username
             self.passhash = generate_password_hash(password)
+            db.session.add(self)
             try:
-                db.session.add(self)
                 db.session.commit()
-            except Exception as e:
-                raise Exception(str(e))
+            except (exc.IntegrityError, Exception) as e:
+                if isinstance(e, exc.IntegrityError):
+                    db.session.rollback()
+                else: raise Exception(str(e))
         def __repr__(self):
             return '%s:%s' % (
                 self.id,
