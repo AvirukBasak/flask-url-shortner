@@ -198,6 +198,7 @@ def home():
     username = current_user.username
     try:
         url = Urldb.query.filter_by(original_url=link).first()
+        if url: url = Urldb(username, link, url.short_key)
         if url: return render_template('home.html',
             form = { 'link': link },
             res = create_response(
@@ -232,12 +233,7 @@ def home():
 @app.route('/history')
 @login_required
 def history():
-    return render_template('history.html',
-        form = {},
-        res = create_response(
-            info_link
-        )
-    )
+    pass
 
 
 @app.route('/r/<key>')
