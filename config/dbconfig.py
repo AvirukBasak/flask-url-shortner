@@ -4,6 +4,7 @@ if __name__ == '__main__':
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
+import sqlite3
 import os
 
 if __name__ == '__main__':
@@ -14,7 +15,7 @@ def dbconfig(app):
         os.path.join(
             os.path.join(
                 os.path.join(
-                    os.path.dirname(__file__), '..'), 'data'), 'data.sqlite'))
+                    os.path.dirname(__file__), '..'), 'data'), 'data.sqlite3'))
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + datapath
     print(app.config['SQLALCHEMY_DATABASE_URI'])
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
