@@ -1,0 +1,12 @@
+CREATE TABLE urldb (
+    id INTEGER PRIMARY KEY,
+    username VARCHAR(9) NOT NULL,
+    original_url TEXT NOT NULL UNIQUE,
+    short_key TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE userdb (
+    id INTEGER NOT NULL PRIMARY KEY,
+    username VARCHAR(9) NOT NULL UNIQUE,
+    passhash VARCHAR(128) NOT NULL
+);
