@@ -24,8 +24,11 @@ def getUserdb(db):
             if len(password) < 8: raise Error('password too short')
             self.username = username
             self.passhash = generate_password_hash(password)
-            db.session.add(self)
-            db.session.commit()
+            try:
+                db.session.add(self)
+                db.session.commit()
+            except Exception as e:
+                raise Exception(str(e))
         def __repr__(self):
             return '%s:%s' % (
                 self.id,
