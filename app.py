@@ -38,7 +38,8 @@ def create_response(info_username = None, info_password = None, info_confpasswor
     return res
 
 
-def err_auth_response(username, password, confpassword, template, error_at, title, msg, code = 400):
+def err_auth_response(username, password, confpassword, template, error_at, title, msg = None, code = 400):
+    if not msg: msg = title
     if error_at not in ['username','password','confpassword','error']:
         raise Exception('\'%s\' is not a valid input name' % error_at)
     return render_template(
@@ -61,7 +62,7 @@ def err_auth_response(username, password, confpassword, template, error_at, titl
 
 @login_manager.user_loader
 def user_loader(u):
-    return Userdb.query.get(u)
+    return db.session.get(Userdb, u)
 
 
 @app.route('/')
@@ -86,8 +87,7 @@ def register():
     username = username.strip()
     if len(username) < 5 or len(username) > 9: return err_auth_response(
         username, password, confpassword, 'register.html', 'username',
-        title = 'username must have 5 to 9 characters',
-        msg = 'username must have 5 to 9 characters'
+        title = 'username must have 5 to 9 characters'
     )
     if chars := is_username_invalid(username): return err_auth_response(
         username, password, confpassword, 'register.html', 'username',
@@ -96,25 +96,21 @@ def register():
     )
     if password != confpassword: return err_auth_response(
         username, password, confpassword, 'register.html', 'confpassword',
-        title = 'passwords didn\'t match',
-        msg = 'passwords didn\'t match'
+        title = 'passwords didn\'t match'
     )
     if len(password) < 8: return err_auth_response(
         username, password, confpassword, 'register.html', 'password',
-        title = 'password should exceed 8 characters',
-        msg = 'password should exceed 8 characters'
+        title = 'password should exceed 8 characters'
     )
     if missing := is_missing_char(password): return err_auth_response(
         username, password, confpassword, 'register.html', 'password',
-        title = 'password should contain ' + missing,
-        msg = 'password should contain ' + missing
+        title = 'password should contain ' + missing
     )
     try:
         u = Userdb.query.filter_by(username=username).first()
         if u: return err_auth_response(
             username, password, confpassword, 'register.html', 'username',
-            title = 'an account of this username already exists',
-            msg = 'an account of this username already exists'
+            title = 'an account with this username already exists'
         )
         u = Userdb(username, password)
         if not u.id: raise Exception('registration failed')
@@ -141,16 +137,14 @@ def auth():
     username = username.strip()
     if len(username) < 5 or len(username) > 9 or is_username_invalid(username): return err_auth_response(
         username, password, None, 'auth.html', 'username',
-        title = 'invalid username',
-        msg = 'invalid username'
+        title = 'invalid username'
     )
     try:
         u = Userdb.query.filter_by(username=username).first()
         flag = u.authenticate(password) if u else False
         if not flag: return err_auth_response(
             username, password, None, 'auth.html', 'password',
-            title = 'invalid username or password',
-            msg = 'invalid username or password'
+            title = 'invalid username or password'
         )
         login_user(u)
     except Exception as e: return err_auth_response(
