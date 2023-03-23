@@ -60,8 +60,8 @@ def create_err_response(username, password, confpassword, template, error_at, ti
 
 
 @login_manager.user_loader
-def user_loader(username):
-    return Userdb.query.filter_by(username=username).first()
+def user_loader(u):
+    return Userdb.query.get(u)
 
 
 @app.route('/')
