@@ -260,11 +260,12 @@ def external_redirect(key):
     return redirect(original, code=307)
 
 
-@app.route('/logout', methods=['GET'])
+@app.route('/logout', methods=['POST'])
 @login_required
 def logout():
     logout_user()
     return redirect('/', code=302)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
