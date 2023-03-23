@@ -17,6 +17,8 @@ def getUrldb(db):
             self.username = username
             self.original_url = original
             self.short_key = shortened
+            db.session.add(self)
+            db.session.commit()
         def __repr__(self):
             return '%s::%s' % (
                 self.original_url,
