@@ -6,4 +6,5 @@ https://<>.vercel.app/
 
 #### Usage
 - `pip install -r requirements.txt`
+- `python setup.py`
 - `python app.py`
