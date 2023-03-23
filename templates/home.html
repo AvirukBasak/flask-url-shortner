@@ -4,15 +4,24 @@
 
 {% block blockmain %}
 
-<form method="POST" action="/register">
-  <label for="username">Link:</label>
-  <input class="text" id="link" name="link" type="url" placeholder="Enter link" value="{{ form.link }}" required/></br>
+<form method="POST">
+  <label for="link">Link:</label>
+  <input required
+    class = "text"
+    id = "link"
+    name = "link"
+    type = "url"
+    placeholder = "Enter link"
+    value = "{{ form.link }}"
+  /></br>
   {% if res.info.link %}<h4 style="color: tomato;">{{ res.info.msg }}</h4></br>{% endif %}
 
   <input class="button" id="submit" type="submit" value="Submit"/>&nbsp;
   <input class="button" id="reset" type="reset" value="Clear"/>
 </form>
 
-<div class="subcontainer">Not registered?&nbsp;<a href="/register">Sign up</a></div>
+{% if res.info.shortlink %}
+
+{% endif %}
 
 {% endblock %}

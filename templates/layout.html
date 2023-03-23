@@ -124,7 +124,8 @@
     {% block blockmain %}
     {% endblock %}
   </div>
-{% elif res.info.error %}
+{% endif %}
+{% if res.info.error %}
   <div class="error-div">
     <h3 style="color: var(--accent-color);">{{ res.info.title }}</h3>
     <pre>{{ res.info.msg | safe }}</pre>
