@@ -13,7 +13,7 @@ def getUrldb(db):
         __tablename__ = 'urldb'
         id = db.Column(db.Integer, primary_key=True)
         username = db.Column(db.Text, nullable=False)
-        original_url = db.Column(db.Text, nullable=False, unique=True)
+        original_url = db.Column(db.Text, nullable=False)
         short_key = db.Column(db.Text, nullable=False, unique=True)
         def __init__(self, username, original, shortened):
             self.username = username
