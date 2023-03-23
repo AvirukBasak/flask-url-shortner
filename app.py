@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for
-from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user
+from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 
 from config.dbconfig import dbconfig
 from dbmodels.urldb import getUrldb
 from dbmodels.userdb import getUserdb
+
+import hashlib
 
 app = Flask(__name__)
 db = dbconfig(app)
@@ -25,13 +27,30 @@ def is_username_invalid(username):
     return None
 
 
-def create_response(info_username = None, info_password = None, info_confpassword = None, info_title = None, info_msg = None, content = None, info_error = False):
+def shorten_url(original):
+    hash = hashlib.sha256((original + current_user.username).encode("UTF-8")).hexdigest()
+    return hash[:7]
+
+
+def create_response(
+    info_username = None,
+    info_password = None,
+    info_confpassword = None,
+    info_link = None,
+    info_shortkey = None,
+    info_title = None,
+    info_msg = None,
+    content = None,
+    info_error = False
+):
     res = {}
     res['info'] = {}
     res['info']['error'] = info_error
     res['info']['username'] = info_username
     res['info']['password'] = info_password
     res['info']['confpassword'] = info_confpassword
+    res['info']['link'] = info_link
+    res['info']['shortkey'] = info_shortkey
     res['info']['title'] = info_title
     res['info']['msg'] = info_msg
     res['content'] = content
@@ -165,12 +184,49 @@ def home():
         form = { 'link': '' },
         res = create_response()
     )
+    link = request.form.get('link')
+    link = link.strip()
+    if not link: return render_template('home.html',
+        form = { 'link': link },
+        res = create_response(
+            info_link = True,
+            info_msg = 'invalid url'
+        ),
+        code = 400
+    )
+    shortkey = shorten_url(link)
+    username = current_user.username
     try:
         url = Urldb.query.filter_by(original_url=link).first()
-        if url: pass # TODO
-        # url = Urldb(username, link, shortlink)
+        if url: return render_template('home.html',
+            form = { 'link': link },
+            res = create_response(
+                info_shortkey = '<a href="/r/%s">https://localhost:5000/r/%s</a>' % (
+                    url.short_key,
+                    url.short_key
+                )
+            )
+        )
+        url = Urldb(username, link, shortkey)
         if not url.id: raise Exception('server error')
-    except Exception as e: pass #TODO
+    except Exception as e: return render_template('error.html',
+            form = { 'link': link },
+            res = create_response(
+                info_error = True,
+                info_title = 'Server Error',
+                info_msg = str(e)
+            ),
+            code = 500
+        )
+    return render_template('home.html',
+        form = { 'link': link },
+        res = create_response(
+            info_shortkey = '<a href="/r/%s">https://localhost:5000/r/%s</a>' % (
+                shortkey,
+                shortkey
+            )
+        )
+    )
 
 
 @app.route('/history')
@@ -178,7 +234,9 @@ def home():
 def history():
     return render_template('history.html',
         form = {},
-        res = create_response()
+        res = create_response(
+            info_link
+        )
     )
 
 
