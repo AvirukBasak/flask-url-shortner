@@ -110,6 +110,12 @@ def register():
         msg = 'password should contain ' + missing
     )
     try:
+        u = Userdb.query.filter_by(username=username).first()
+        if u: return create_err_response(
+            username, password, confpassword, 'register.html', 'username',
+            title = 'an account of this username already exists',
+            msg = 'an account of this username already exists'
+        )
         u = Userdb(username, password)
         if not u.id: raise Exception('registration failed')
     except Exception as e: return create_err_response(
