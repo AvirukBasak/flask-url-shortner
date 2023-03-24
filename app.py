@@ -3,7 +3,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 
-import config.envars
+import config.envars as envars
 from config.dbconfig import dbconfig
 from dbmodels.urldb import getUrldb
 from dbmodels.userdb import getUserdb
@@ -168,7 +168,7 @@ def auth():
         flag = u.authenticate(password) if u else False
         if not flag: return err_auth_response(
             username, password, None, 'auth.html', 'password',
-            title = 'invalid username or password'
+            title = 'incorrect username or password'
         )
         login_user(u)
     except Exception as e: return err_auth_response(
@@ -207,8 +207,8 @@ def home():
             form = { 'link': link },
             res = create_response(
                 info_shortkey = '<a href="/r/%s" target="_blank">https://%s/r/%s</a>' % (
-                    envars.APP_HOSTNAME,
                     url.short_key,
+                    envars.APP_HOSTNAME,
                     url.short_key
                 )
             )
@@ -226,9 +226,9 @@ def home():
     return render_template('home.html',
         form = { 'link': link },
         res = create_response(
-            info_shortkey = '<a href="/r/%s" target="_blank">https://%s/r/%s</a>' % (
-                envars.APP_HOSTNAME,
+            info_shortkey = '<a href="/%s" target="_blank">https://%s/r/%s</a>' % (
                 shortkey,
+                envars.APP_HOSTNAME,
                 shortkey
             )
         )
@@ -239,7 +239,7 @@ def home():
 @login_required
 def history():
     def ret_split(el): 
-        (url, key) = str(el).rsplit('::', 1)
+        (url, key) = (el.original_url, el.short_key)
         return (url, envars.APP_HOSTNAME + '/' + key)
     content = Urldb.query.filter_by(username=current_user.username)
     content = list(map(ret_split, content))
