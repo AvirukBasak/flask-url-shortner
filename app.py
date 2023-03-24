@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 
+import config.envars
 from config.dbconfig import dbconfig
 from dbmodels.urldb import getUrldb
 from dbmodels.userdb import getUserdb
@@ -203,7 +204,8 @@ def home():
         if url: return render_template('home.html',
             form = { 'link': link },
             res = create_response(
-                info_shortkey = '<a href="/r/%s">https://localhost:5000/r/%s</a>' % (
+                info_shortkey = '<a href="/r/%s" target="_blank">https://%s/r/%s</a>' % (
+                    envars.APP_HOSTNAME,
                     url.short_key,
                     url.short_key
                 )
@@ -222,7 +224,8 @@ def home():
     return render_template('home.html',
         form = { 'link': link },
         res = create_response(
-            info_shortkey = '<a href="/r/%s" target="_blank">https://localhost:5000/r/%s</a>' % (
+            info_shortkey = '<a href="/r/%s" target="_blank">https://%s/r/%s</a>' % (
+                envars.APP_HOSTNAME,
                 shortkey,
                 shortkey
             )
@@ -235,10 +238,9 @@ def home():
 def history():
     def ret_split(el): 
         (url, key) = str(el).rsplit('::', 1)
-        return (url, key)
+        return (url, envars.APP_HOSTNAME + '/' + key)
     content = Urldb.query.filter_by(username=current_user.username)
     content = list(map(ret_split, content))
-    print(content)
     return render_template('history.html',
         form = {},
         res = create_response(content=content)
