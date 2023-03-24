@@ -114,6 +114,8 @@ The SQL schema files are loaded by `setup.py` to create `data/data.sqlite3`.
 
 A thing of note is that if the original URL already exists in the database for a user, it's short URL is reused from there and is not recreated for the current user.
 
+However, if the user provides a custom key, that key is used as the short URL endpoint instead, even if the original URL is already in the database.
+
 ### Challenges faced
 Creating a proper template structure that's easy to debug was challenging.
 Using a single layout file made the structure complicated.

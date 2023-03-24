@@ -40,7 +40,8 @@ def create_response(
     info_password = None,
     info_confpassword = None,
     info_link = None,
-    info_shortkey = None,
+    info_shorturl = None,
+    info_custom_key = None,
     info_title = None,
     info_msg = None,
     content = None,
@@ -53,9 +54,10 @@ def create_response(
     res['info']['password'] = info_password
     res['info']['confpassword'] = info_confpassword
     res['info']['link'] = info_link
-    res['info']['shortkey'] = info_shortkey
-    res['info']['title'] = info_title
-    res['info']['msg'] = info_msg
+    res['info']['shorturl'] = info_shorturl
+    res['info']['custom_key'] = info_custom_key
+    res['info']['title'] = info_title if info_title else info_msg
+    res['info']['msg'] = info_msg if info_msg else info_title
     res['content'] = content
     return res
 
@@ -191,22 +193,50 @@ def home():
     )
     link = request.form.get('link')
     link = link.strip()
+    custom_key = request.form.get('custom_key')
+    custom_key = custom_key.strip() if custom_key else ''
     if not link: return render_template('home.html',
-        form = { 'link': link },
+        form = { 'link': link, 'custom_key': custom_key },
         res = create_response(
             info_link = True,
             info_msg = 'invalid url'
         )
     ), 400
-    shortkey = shorten_url(link)
+    if custom_key and (len(custom_key) > 15 or len(custom_key)) < 3: return render_template('home.html',
+        form = { 'link': link, 'custom_key': custom_key },
+        res = create_response(
+            info_custom_key = True,
+            info_msg = 'custom key should be 3 to 15 characters'
+        )
+    ), 400
+    try:
+        if custom_key:
+            url = Urldb.query.filter_by(short_key=custom_key).first()
+            if url: return render_template('home.html',
+                form = { 'link': link, 'custom_key': custom_key },
+                res = create_response(
+                    info_custom_key = True,
+                    info_msg = 'this custom key is taken'
+                )
+            ), 400
+    except Exception as e: return render_template('error.html',
+        form = { 'link': link, 'custom_key': custom_key },
+        res = create_response(
+            info_error = True,
+            info_title = 'Server Error',
+            info_msg = str(e)
+        )
+    ), 500
+    shortkey = shorten_url(link) if not custom_key else custom_key
     username = current_user.username
     try:
         url = Urldb.query.filter_by(original_url=link).first()
-        if url: url = Urldb(username, link, url.short_key)
+        if url and not custom_key: url = Urldb(username, link, url.short_key)
+        else: url = None
         if url: return render_template('home.html',
-            form = { 'link': link },
+            form = { 'link': link, 'custom_key': custom_key },
             res = create_response(
-                info_shortkey = '<a href="/r/%s" target="_blank">https://%s/r/%s</a>' % (
+                info_shorturl = '<a href="/r/%s" target="_blank">https://%s/r/%s</a>' % (
                     url.short_key,
                     envars.APP_HOSTNAME,
                     url.short_key
@@ -216,7 +246,7 @@ def home():
         url = Urldb(username, link, shortkey)
         if not url.id: raise Exception('server error')
     except Exception as e: return render_template('error.html',
-            form = { 'link': link },
+            form = { 'link': link, 'custom_key': custom_key },
             res = create_response(
                 info_error = True,
                 info_title = 'Server Error',
@@ -224,9 +254,9 @@ def home():
             )
         ), 500
     return render_template('home.html',
-        form = { 'link': link },
+        form = { 'link': link, 'custom_key': custom_key },
         res = create_response(
-            info_shortkey = '<a href="/r/%s" target="_blank">https://%s/r/%s</a>' % (
+            info_shorturl = '<a href="/r/%s" target="_blank">https://%s/r/%s</a>' % (
                 shortkey,
                 envars.APP_HOSTNAME,
                 shortkey

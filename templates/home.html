@@ -6,7 +6,7 @@
 
 <div class="subcontainer unimportant">View URL&nbsp;<a href="/history">History</a></div>
 <form method="POST">
-  <label for="link">Link:&nbsp;</label>
+  <label for="link">Long URL:&nbsp;&nbsp;</label>
   <input required
     class = "text"
     id = "link"
@@ -14,20 +14,32 @@
     type = "url"
     placeholder = "Enter link"
     value = "{{ form.link }}"
-    style = "width: calc(100% - 69px);"
+    style = "width: calc(100% - 69px - 37px);"
   /></br>
   {% if res.info.link %}<h4 style="color: tomato;">{{ res.info.msg }}</h4></br>{% endif %}
+
+  <label for="custom_key">Custom key:</label>
+  <input
+    class = "text"
+    id = "custom_key"
+    name = "custom_key"
+    type = "text"
+    placeholder = "Leave empty for default"
+    value = "{{ form.custom_key }}"
+    style = "width: calc(100% - 105px);"
+  /></br>
+  {% if res.info.custom_key %}<h4 style="color: tomato;">{{ res.info.msg }}</h4></br>{% endif %}
 
   <input class="button" id="submit" type="submit" value="Submit"/>&nbsp;
   <input class="button" id="reset" type="reset" value="Clear"/>
 </form>
-{% if res.info.shortkey %}
+{% if res.info.shorturl %}
 <hr>
 <h3 style="color: var(--accent-color);">
     Shortened link
 </h3>
 
-<div class="subcontainer">{{ res.info.shortkey | safe }}</div>
+<div class="subcontainer">{{ res.info.shorturl | safe }}</div>
 
 {% endif %}
 {% endblock %}
