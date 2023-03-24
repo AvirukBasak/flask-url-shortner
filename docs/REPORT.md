@@ -23,7 +23,7 @@ root/
 │   ├── schema_userdb.sql
 │   └── schema_urldb.sql
 ├── docs/
-│   └── userdb.py
+│   └── REPORT.md
 ├── templates/
 │   ├── auth.html
 │   ├── error.html
@@ -74,6 +74,8 @@ Setup script will simply quit if the database already exists.
 It holds the configuration for the database and a module to load environment variables.
 
 `dbconfig.py` configures `SQLALCHEMY_DATABASE_URI` and others.
+
+The `SECRET_KEY` used is provided by the `secrets` module.
 
 #### data/
 Contains one and only `data.sqlite3` which is the database file.
@@ -131,7 +133,7 @@ This project was a great learning experience. It was challenging, and had certai
 
 There are a few points that were noted when building this project:
 
-- db init isn't the only was to intialise a flask database.
+- `flask db init` isn't the only was to intialise a flask database.
 - flask makes authentication very easy; there was no need to handle cookies.
 - commiting to a database may cause integrity error. one is supposed to rollback the database in such a case.
 - so try-except blocks were used to handle such scenarios

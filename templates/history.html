@@ -36,11 +36,11 @@
     <th>URL</th>
     <th>Short URL</th>
   </tr>
-  {% for (orig, short) in res.content %}
+  {% for (orig, key, short) in res.content %}
   <tr>
     <td class="left"><a href="{{ orig }}" target="_blank">{{ orig[:20] }}...</a></td>
     <td class="right"><span>
-      <a href="{{ short }}" target="_blank">{{ short }}</a>
+      <a href="/r/{{ key }}" target="_blank">{{ short }}</a>
     </span></td>
   </tr>
   {% endfor %}

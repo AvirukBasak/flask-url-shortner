@@ -226,7 +226,7 @@ def home():
     return render_template('home.html',
         form = { 'link': link },
         res = create_response(
-            info_shortkey = '<a href="/%s" target="_blank">https://%s/r/%s</a>' % (
+            info_shortkey = '<a href="/r/%s" target="_blank">https://%s/r/%s</a>' % (
                 shortkey,
                 envars.APP_HOSTNAME,
                 shortkey
@@ -240,7 +240,7 @@ def home():
 def history():
     def ret_split(el): 
         (url, key) = (el.original_url, el.short_key)
-        return (url, envars.APP_HOSTNAME + '/' + key)
+        return (url, key, envars.APP_HOSTNAME + '/r/' + key)
     content = Urldb.query.filter_by(username=current_user.username)
     content = list(map(ret_split, content))
     return render_template('history.html',
