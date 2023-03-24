@@ -6,7 +6,7 @@ from flask_migrate import Migrate
 import secrets
 import os
 
-import envars
+import config.envars
 
 if __name__ == '__main__':
     exit(1)
