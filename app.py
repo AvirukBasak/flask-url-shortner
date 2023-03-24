@@ -1,3 +1,5 @@
+#!/bin/env python3
+
 from flask import Flask, render_template, request, redirect, url_for
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 

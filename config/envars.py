@@ -1,3 +1,6 @@
+if __name__ == '__main__':
+    exit(1)
+
 import os
 
 APP_HOSTNAME = os.getenv('APP_HOSTNAME')

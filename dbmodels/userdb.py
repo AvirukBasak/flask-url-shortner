@@ -5,9 +5,6 @@ from flask_login import UserMixin
 from sqlalchemy import exc
 from werkzeug.security import generate_password_hash, check_password_hash
 
-if __name__ == '__main__':
-    exit(1)
-
 USERDB = None
 
 def getUserdb(db):
