@@ -95,7 +95,7 @@ The SQL schema files are loaded by `setup.py` to create `data/data.sqlite3`.
 
 ### Workflow
 - A user visits `/`.
-- `/` requires login, if user may get redirected to `/auth`.
+- If `/` requires login, user may get redirected to `/auth`.
 - `/` itself redirects user to `/home`.
 - `/auth` requires user to authenticate themselves.
 - Alternately, the user can click on `Sign up` to register.
